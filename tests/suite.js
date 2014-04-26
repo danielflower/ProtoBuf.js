@@ -980,6 +980,65 @@
             test.done();
         },
 
+        "enumexample": function(test) {
+            try {
+                var root = ProtoBuf.protoFromFile(__dirname+"/enum-example.proto").build();
+
+                var SomeMessage = root.Examples.MissingEnums.SomeMessage;
+                var SomeEnum = root.Examples.MissingEnums.SomeEnum;
+                var message = new SomeMessage({
+                    "optionalEnumWithDefault": SomeEnum.ONE,
+                    "optionalEnumWithoutDefault": SomeEnum.TWO,
+                    "requiredEnumWithoutDefault": SomeEnum.TWO
+                });
+
+                var encoded = message.encode();
+                var decoded = SomeMessage.decode(encoded);
+
+                test.deepEqual(decoded, {
+                    "optionalEnumWithDefault": SomeEnum.ONE,
+                    "optionalEnumWithoutDefault": SomeEnum.TWO,
+                    "requiredEnumWithDefault": SomeEnum.TWO,
+                    "requiredEnumWithoutDefault": SomeEnum.TWO
+                });
+            } catch (e) {
+                fail(e);
+            }
+            test.done();
+        },
+
+        "enumexample.unknownvalue": function(test) {
+            try {
+
+                var root = ProtoBuf.protoFromFile(__dirname+"/enum-example.proto").build();
+
+                var SomeMessage = root.Examples.MissingEnums.SomeMessage;
+                var SomeEnum = root.Examples.MissingEnums.SomeEnum;
+//              The following code was used to generate the byte buffer below, and then THREE was removed.
+//              In this way we can test what happens when an unknown enum value is returned.
+//                var message = new SomeMessage({
+//                    "optionalEnumWithDefault": SomeEnum.THREE,
+//                    "optionalEnumWithoutDefault": SomeEnum.THREE,
+//                    "requiredEnumWithDefault": SomeEnum.THREE,
+//                    "requiredEnumWithoutDefault": SomeEnum.THREE
+//                });
+//                var encoded = message.encode();
+//                console.log('it is ' + encoded.toBase64()); // it is CAMQAxgDIAM=
+
+                var decoded = SomeMessage.decode(ByteBuffer.decode64("CAMQAxgDIAM="));
+
+                test.deepEqual(decoded, {
+                    "optionalEnumWithDefault": SomeEnum.TWO,
+                    "optionalEnumWithoutDefault": undefined,
+                    "requiredEnumWithDefault": SomeEnum.TWO,
+                    "requiredEnumWithoutDefault": undefined
+                });
+            } catch (e) {
+                fail(e);
+            }
+            test.done();
+        },
+
         "extendexample": function(test) {
             try {
                 var root = ProtoBuf.protoFromFile(__dirname+"/extend2.proto").build();

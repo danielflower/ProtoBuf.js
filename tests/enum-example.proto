@@ -1,0 +1,18 @@
+package Examples.MissingEnums;
+
+enum SomeEnum {
+    ONE = 1;
+    TWO = 2;
+//    THREE = 3;
+}
+
+message SomeMessage {
+
+    optional SomeEnum optionalEnumWithDefault = 1 [default=TWO];
+    optional SomeEnum optionalEnumWithoutDefault = 2;
+
+    required SomeEnum requiredEnumWithDefault = 3 [default=TWO];
+    required SomeEnum requiredEnumWithoutDefault = 4;
+
+}
+

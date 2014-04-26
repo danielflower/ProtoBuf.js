@@ -934,7 +934,14 @@ ProtoBuf.Reflect = (function(ProtoBuf) {
                     return values[i].id;
                 }
             }
-            throw(new Error("Illegal value for "+this.toString(true)+": "+value+" (not a valid enum value)"));
+            // There is no matching enum value so try to use the default value.
+            for (i=0; i<values.length; i++) {
+                if (values[i].name === this.options['default']) {
+                    return values[i].id;
+                }
+            }
+            // There is no default so as per the spec the value should not be set.
+            return undefined;
         }
         // Embedded message
         if (this.type == ProtoBuf.TYPES["message"]) {
